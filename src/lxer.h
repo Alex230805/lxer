@@ -128,36 +128,40 @@ typedef struct{
   size_t  source_len;
   size_t  lxer_tracker;
 
-  token_slice** stream_out;
+  token_slice* stream_out;
   size_t       stream_out_len;
   Arena_header lxer_ah;
 }lxer_head;
 
+// some predefined tokens, those are here only for 
+// example, you can add or remove anything you want 
+// as long you respect how the structure is defined 
+// in the TOKEN_DISPOSE macro 
 
 static char* token_table_lh[] = {
-  [LXR_SUM_SYMB] = "+",
-  [LXR_SUB_SYMB] = "-",
-  [LXR_MLT_SYMB] = "*",
-  [LXR_DIV_SYMB] = "/",
-  [LXR_GRT_SYBM] = ">",
-  [LXR_LST_SYBM] = "<",
-  [LXR_EQL_SYBM] = "==",
+  [LXR_SUM_SYMB] = "",
+  [LXR_SUB_SYMB] = "",
+  [LXR_MLT_SYMB] = "",
+  [LXR_DIV_SYMB] = "",
+  [LXR_GRT_SYBM] = "",
+  [LXR_LST_SYBM] = "",
+  [LXR_EQL_SYBM] = "",
   
-  [LXR_LINE_COMMENT] = "//",
-  [LXR_OPEN_COMMENT] = "/*",
-  [LXR_CLOSE_COMMENT] = "*/",
+  [LXR_LINE_COMMENT] = "",
+  [LXR_OPEN_COMMENT] = "",
+  [LXR_CLOSE_COMMENT] = "",
   
-  [LXR_STRING_TYPE] = "string",
-  [LXR_INT_TYPE] = "int",
-  [LXR_DOUBLE_TYPE] = "double",
-  [LXR_FLOAT_TYPE] = "float",
-  [LXR_CHAR_TYPE] = "char",
-  [LXR_POINTER_TYPE] = "ptr",
-  [LXR_VOID_TYPE] = "void",
+  [LXR_STRING_TYPE] = "",
+  [LXR_INT_TYPE] = "",
+  [LXR_DOUBLE_TYPE] = "",
+  [LXR_FLOAT_TYPE] = "",
+  [LXR_CHAR_TYPE] = "",
+  [LXR_POINTER_TYPE] = "",
+  [LXR_VOID_TYPE] = "",
   
   [LXR_COMMA] = ",",
   [LXR_SEMICOLON] = ";",
-  [LXR_DOUBLE_DOTS] = "::",
+  [LXR_DOUBLE_DOTS] = ":",
   [LXR_DOT] = ".",
   [LXR_QUOTE] = "'",
   [LXR_DOUBLE_QUOTE] = "\"",
@@ -172,7 +176,7 @@ static char* token_table_lh[] = {
   [LXR_IF_STATEMENT] = "",
   [LXR_WHILE_STATEMENT] = "",
   [LXR_RET_STATEMENT] = "",
-  [LXR_ASSIGNMENT] = "",
+  [LXR_ASSIGNMENT] = "=",
   [LXT_EXPORT_STATEMENT] = "",
   [LXR_MODULE_STATEMENT] = "",
   [LXR_IMPORT_STATEMENT] = "",
@@ -270,6 +274,7 @@ bool lxer_misc_expect_misc(lxer_head*lh);
 
 char*   lxer_get_rh(lxer_head*lh, bool reverse);
 char**  lxer_get_rh_lh(lxer_head*lh);
+char* lxer_get_rh_in_between(lxer_head* lh, size_t tracker_lh, size_t tracker_rh);
 
 
 #ifndef LXER_IMPLEMENTATION

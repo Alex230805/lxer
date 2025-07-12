@@ -16,13 +16,13 @@
 #define u64t uint64_t
 #define any void*
 
-#define DEBUG true
+#define DEBUG false
 #define POOL_SIZE 1024
 
 #if !(defined(PAGE_SIZE) || defined(PAGE_NUMBER))
   
-  #define PAGE_SIZE 64 // in bytes   
-  #define PAGE_NUMBER 1024 // number of pages per arena. The length of the arena would be PAGE_SIZE*PAGE_NUMBER.
+  #define PAGE_SIZE 1 // in bytes   
+  #define PAGE_NUMBER 5 // number of pages per arena. The length of the arena would be PAGE_SIZE*PAGE_NUMBER.
 
 #endif 
 
@@ -65,13 +65,13 @@ typedef struct{
   fprintf(stdout,"\e[1;32m[TODO]: "string"\e[0m\n",__VA_ARGS__);    // bold green
 
 #define ERROR(string,...) \
-  fprintf(stderr,"\e[41;37m[ERROR]: "string"\e[0m\n",__VA_ARGS__); //exit(1); // underline white, background red
+  fprintf(stderr,"\e[41;37m[ERROR]: "string"\e[0m\n",__VA_ARGS__); exit(1); // underline white, background red
 
 #define DINFO(string, ...) \
   fprintf(stdout, "\e[4;33m[DEBUG]: "string"\e[0m\n", __VA_ARGS__);  // underline yellow
 
 #define NOTY(noty,string, ...) \
-  printf("\e[1;35m["noty"]: "string"\e[0m\n", __VA_ARGS__);          // regular purple
+  printf("\e[1;32m["noty"]: "string"\e[0m\n", __VA_ARGS__);          // regular purple
 
 #define WARNING(string,...) \
   printf("\e[43;1;91m[WARNING]: "string"\e[0m\n", __VA_ARGS__);
@@ -79,20 +79,23 @@ typedef struct{
 #define ARENA_ERROR(string) \
   fprintf(stderr,"[ARENA ALLOCATOR ERROR]: "string"\n");
 
+#ifdef DA_MACRO
 
 #define dapush(arena, arr, tracker, size, cast, obj)\
-  arr[*tracker] = obj;\
-  *tracker += 1;\
-  if(*tracker == *size){\
-    size_t new_size = *size*2;\
-    cast* new_arr = (cast*)arena_alloc(arena, sizeof(cast)*new_size);\
-    for(size_t dapush_tracker=0;dapush_tracker<*size;dapush_tracker++){\
-      new_arr[dapush_tracker] = arr[dapush_tracker];\
-    }\
-    arr = new_arr;\
-    *size = new_size;\
-  }
+  do{\
+    arr[*tracker] = obj;\
+    *tracker += 1;\
+    if(*tracker == *size){\
+      size_t new_size = *size*2;\
+      cast* new_arr = (cast*)arena_alloc(arena, sizeof(cast)*new_size);\
+      for(size_t dapush_tracker=0;dapush_tracker<*size;dapush_tracker++){\
+        new_arr[dapush_tracker] = arr[dapush_tracker];\
+      }\
+      arr = new_arr;\
+      *size = new_size;\
+    }while(0);
 
+#endif
 
 
 

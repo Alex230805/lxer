@@ -41,11 +41,10 @@ StringBuilder* read_file(Arena_header* ah, char*path){
     exit(errno);
   }
   fseek(fp, 0, SEEK_END);
-  sb->len = ftell(fp)+1;
+  sb->len = ftell(fp);
   rewind(fp);
   sb->string = (char*)arena_alloc(ah,sizeof(char)*sb->len);
   fread(sb->string, sizeof(char), sb->len,fp);
-  sb->string[sb->len-1] = '\n';
   sb->string[sb->len] = '\0';
   fclose(fp);
   return sb;
@@ -127,9 +126,9 @@ void* arena_alloc(Arena_header* arenah, size_t size){
   }
   Arena_alloc* arena = arenah->cursor;
   // number of required pages after normalization
-  int page_required = (int)size/ (1+(arena->page_size));
-  int size_required = (int)size/ (1+(arena->page_size*arena->pages));
-  if((int)size/ (1+(arena->free_pages*arena->pages)) >= 1){
+  int page_required = (int) (size/ (arena->page_size));
+  int size_required = (int) (size/ (arena->page_size*arena->pages));
+  if(page_required > arena->free_pages){
     if(size_required >= 1){
       int new_size = arena->pages;
       int new_page_size = arena->page_size;
@@ -169,6 +168,7 @@ void arena_free_area(Arena_alloc* arena){
 
 
 void arena_free(Arena_header *arenah){
+  if(arenah->arena_count < 1) return;
   Arena_alloc* a = arenah->first_arena;
   if(arenah->first_arena->next != NULL){
     arenah->first_arena = arenah->first_arena->next;
